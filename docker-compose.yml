@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: banca_db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: banca_mvp
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - banca_network
+
+  accounts_ms:
+    build: ./accounts_ms
+    container_name: accounts_ms
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=mysql+mysqlconnector://root:password@db:3306/banca_mvp
+    depends_on:
+      - db
+    networks:
+      - banca_network
+
+  accounts_frontend:
+    build: ./frontend/accounts-frontend
+    container_name: accounts_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - accounts_ms
+    networks:
+      - banca_network
+
+volumes:
+  mysql_data:
+
+networks:
+  banca_network:
+    driver: bridge
