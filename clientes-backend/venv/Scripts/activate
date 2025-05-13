@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="D:\Arqui temporal\Proyecto SEGUNDA HACKATON\clientes-backend\venv"
+VIRTUAL_ENV="D:\ArquiTemporal\ProyectoSEGUNDAHACKATON\clientes-backend\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
