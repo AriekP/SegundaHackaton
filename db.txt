@@ -1,0 +1,51 @@
+
+-- Crear base de datos
+CREATE DATABASE IF NOT EXISTS banca_mvp;
+USE banca_mvp;
+
+-- Microservicio 1: Clientes (Persona 1)
+CREATE TABLE clientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ci VARCHAR(15) NOT NULL UNIQUE COMMENT 'CI boliviano sin complemento',
+    nombres VARCHAR(50) NOT NULL,
+    apellidos VARCHAR(50) NOT NULL,
+    email VARCHAR(50) UNIQUE,
+    password VARCHAR(100) NOT NULL COMMENT 'Encriptar con SHA-256',
+    estado ENUM('ACTIVO', 'INACTIVO') DEFAULT 'ACTIVO',
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- Microservicio 2: Cuentas (Persona 2)
+CREATE TABLE cuentas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cliente_id INT NOT NULL,
+    numero_cuenta VARCHAR(12) UNIQUE COMMENT 'Ej: 1234567890',
+    saldo DECIMAL(10, 2) DEFAULT 0.00,
+    tipo ENUM('AHORRO', 'CORRIENTE') DEFAULT 'AHORRO',
+    moneda ENUM('BOB', 'USD') DEFAULT 'BOB',
+    estado ENUM('ACTIVA', 'BLOQUEADA') DEFAULT 'ACTIVA'
+) ENGINE=InnoDB;
+
+-- Microservicio 3: Transacciones/Pagos (Persona 3)
+CREATE TABLE transacciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cuenta_id INT NOT NULL,
+    tipo ENUM('DEPOSITO', 'RETIRO', 'PAGO_SERVICIO', 'TRANSFERENCIA'),
+    monto DECIMAL(10, 2) NOT NULL,
+    descripcion VARCHAR(100),
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    referencia VARCHAR(30) COMMENT 'Número de factura o servicio'
+) ENGINE=InnoDB;
+
+-- Datos de prueba (opcional, para acelerar desarrollo)
+INSERT INTO clientes (ci, nombres, apellidos, email, password) VALUES 
+('1234567', 'Juan', 'Perez', 'juan@email.com', SHA2('123456', 256)),
+('7654321', 'Maria', 'Lopez', 'maria@email.com', SHA2('123456', 256));
+
+INSERT INTO cuentas (cliente_id, numero_cuenta, saldo) VALUES
+(1, '1234567890', 1000.00),
+(2, '0987654321', 500.00);
+
+INSERT INTO transacciones (cuenta_id, tipo, monto, descripcion) VALUES
+(1, 'DEPOSITO', 500.00, 'Depósito inicial'),
+(2, 'DEPOSITO', 300.00, 'Depósito inicial');
